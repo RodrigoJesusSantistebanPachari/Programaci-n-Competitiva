@@ -2,23 +2,27 @@
 
 using namespace std;
 
-
-int getTotal(vector<int> arr, vector<int> aux){
-	int total = aux[0];
-	for(int c: aux)
-		total += (c*(c-1))/2;
-	return total;
+int getTotal(int aux[], int n){
+    int total = aux[0];
+    for(int i=0; i<n; i++)
+        total += (aux[i]*(aux[i]-1))/2;
+    return total;
 }
+    
+int subarraysDivByK(vector<int>& arr, int k) {
+    int aux[k];
+    for(int i=0; i<k; i++){
+        aux[i]=0;		
+    }
 
-int getSubarraySumsDivisiblebyK(vector<int> arr, int k){
-	vector<int> aux(k);
 	int sum=0;
-	for(int n:arr){
-		sum += (k+(n%k)) % k;
-		aux[sum%k]+=1;
-	}
-	
-	return getTotal(arr,aux);
+    for(int n:arr){
+        sum += ((n%k)+k)%k;
+        aux[sum%k]+=1;
+    }
+
+    return getTotal(aux, k);
+
 }
 
 int main(){
@@ -32,7 +36,7 @@ int main(){
         cin>>arr[i];
     }
     
-    cout<<getSubarraySumsDivisiblebyK(arr,k);
+    cout<<subarraysDivByK(arr,k);
     
 
     return 0;
