@@ -5,47 +5,28 @@ using namespace std;
 int main(){
 	
 	//Entrada
-	int n,k;
-	int A;
+    int n,k;
     cin>>n; cin>>k;
-    map<int, int> diff;
+    unordered_map<int, int> diff;
+	
+	int temp;
+	for(int i = 0; i < n; i++) {
+        cin >> temp;
+        diff[temp]++;
+    }
+	
+	int proc = 0;
+    for(int i = 0; i <= 999; i++)
+        proc += diff[i];
 
-    for(int i=0; i<n; i++){
-    	cin>>A;
-    	auto busq = diff.find(A);
-    	if(busq == diff.end())
-    		diff.insert({A, 1});
-    	else
-    		diff[A]++;
-    	busq = diff.find(A+1000);
-    	if(busq == diff.end())
-    		diff[A+1000]--;
-    	else
-    		diff.insert({A+1000, -1});
-	}
-	
-	vector<int> acc(diff.size());
-	
-	acc[0] = diff.begin()->second;
-	
-	auto it = diff.cbegin();
-	it++;
-	for(int i=1; i<diff.size(); i++){
-		acc[i] = acc[i-1]+ (it->second);
-		it++;
-	}
-	
-	//for(int n:acc)
-	//	cout<<n<<" ";
-		
-	cout<<endl;
-	int max = *max_element(acc.begin(), acc.end());
-	float resultado = max/(k*1.0);
-	
-	if(resultado-trunc(resultado) > 0)
-		cout<<trunc(resultado)+1;
-	else
-		cout<<trunc(resultado);
+    int mejor = proc;
+    for(int i=1000; i<=100000; i++) {
+        proc += diff[i];
+        proc -= diff[i-1000];
+        mejor = max(mejor, proc);
+    }
 
-	return 0;
+     cout<<(mejor + k - 1)/k;
+	
+     return 0;
 }
