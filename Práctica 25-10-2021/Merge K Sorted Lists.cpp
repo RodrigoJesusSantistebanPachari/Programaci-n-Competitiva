@@ -2,34 +2,72 @@
 
 using namespace std;
 
+struct ListNode {
+	int val;
+	ListNode *next;
+	ListNode() : val(0), next(nullptr) {}
+	ListNode(int x) : val(x), next(nullptr) {}
+	ListNode(int x, ListNode *next) : val(x), next(next) {}
+};
 
-void merge(vector<vector<int>> &V){
-	priority_queue<int> pq;
-	for(int i=0; i<V.size(); i++){
-		for(int j=0; j<V[i].size(); j++){
-			pq.push(V[i][j]);
-		}
-	}
-	
-	while (! pq.empty() ) {
-	    cout << pq.top() << " ";
-	    pq.pop();
-	}	
-	
+ListNode* mergeKLists(vector<ListNode*>& lists) {
+    if(lists.size() <= 0)
+		return NULL;
+    
+    priority_queue<int, vector<int>, greater<int>> pq;
+    for(auto i : lists){
+        ListNode *tmp = i;
+        while(tmp != NULL){
+            pq.push(tmp->val);
+            tmp = tmp->next;
+        }
+    }
+    
+    if(pq.empty())
+        return NULL;
+    
+    ListNode *aux2 = new ListNode(pq.top());
+    pq.pop();
+    ListNode *aux3 = aux2;
+    while(!pq.empty()){
+        ListNode *n = new ListNode(pq.top());
+        aux3->next = n;
+        pq.pop();
+        aux3 = aux3->next;
+    }
+    
+    aux3->next = NULL;
+    
+    return aux2;
 }
-
 
 int main(){
 	
-	vector<vector<int>> v;
-	vector<int> v1 = {1,2,4,5};
-	vector<int> v2 = {1,5,9};
-	vector<int> v3 = {2,8,9};
-	v.push(v1);
-	v.push(v2);
-	v.push(v3);
+	ListNode *a1 = new ListNode(1);
+	ListNode *a2 = new ListNode(2);
+	ListNode *a3 = new ListNode(4);
+	ListNode *a4 = new ListNode(5);
+	a1->next = a2;
+	a2->next = a3;
+	a3->next = a4;
 	
-	merge(v);
+	ListNode *b1 = new ListNode(1);
+	ListNode *b2 = new ListNode(5);
+	ListNode *b3 = new ListNode(9);
+	b1->next = b2;
+	b2->next = b3;
+	
+	vector<ListNode*> lists;
+	lists.push_back(a1);
+	lists.push_back(b1);
+
+	//Muestra el merge
+	ListNode * resultado = mergeKLists(lists);
+	while(resultado->next != nullptr){
+		cout<<resultado->val<<" ";
+		resultado = resultado->next;
+	}
+	cout<<resultado->val<<" ";
 	
 	
 
