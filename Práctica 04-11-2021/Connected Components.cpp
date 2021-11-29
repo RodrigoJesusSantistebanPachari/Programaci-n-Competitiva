@@ -1,60 +1,117 @@
 #include <bits/stdc++.h>
-
-//Decimal: 1
-//Binario: 0
-
 using namespace std;
 
-int v,e,n;
-char v_1, v_2; 
-int grafo[26][26];
-bool visited[26];
+class Graph{
+    public:
+        map<int, short> visited_vertexes;
+        map<int, vector<std::map<int, int>>> adjacent_vertexes;
+        int total_weight = 0;
+        void add_edge(int vertex1, int vertex2, int weight);
+        void clear_visited_vertexes();
+};
 
-void resetear(){
-	for(int i = 0; i< 26; i++)
-		visited[i] = false;
-	for(int i = 0; i< 26; i++){
-		for(int j = 0; j< 26; j++){
-			grafo[i][j] = 0;
-		}	
-	}
-	
+
+
+void Graph::add_edge(int vertex1, int vertex2, int weight){
+    std::map<int, int> temp;
+    temp = {{vertex2, weight}}; 
+    this->adjacent_vertexes[vertex1].push_back(temp);
+    temp = {{vertex1, weight}};
+    this->adjacent_vertexes[vertex2].push_back(temp);
+    total_weight += weight;
 }
 
-void busqueda(int a, int v){
-    visited[v] = true;
-    cout <<char(v+97)<< " ";
- 
-    // Recur for all the vertices
-    // adjacent to this vertex
-    list<int>::iterator i;
-    for (i = 0;adj[v].begin(); i<a != adj[v].end(); ++i)
-        if (!visited[*i])
-            DFSUtil(*i, visited);
+
+void Graph::clear_visited_vertexes(){
+    this->visited_vertexes.clear();
 }
- 
+
+
+void dfs_tag_vertexes(Graph *g, int current_vertex, int parent_vertex);
+
+void _dfs_tag_vertexes(Graph *g, int current_vertex, int parent_vertex, std::vector<int> *arr);
+
 
 int main(){
-	
-	cin>>n;
-	
-	for(int i=0; i<n; i++){
-		cin>>v; cin>>e;
-		resetear();
-		for(int j=0; j<e; j++){
-			cin>>v_1; cin>>v_2;
-			grafo[v_1-97][v_2-97] = 1;	//ASCCI
-			grafo[v_2-97][v_1-97] = 1;
-		}
-		for(int j=0; j<v; j++){
-			if (!visited[i]){
-				for(int k=0; k<)
-				cout<<endl;
-			}
-		}
-		
-	}
-	
-	return 0;
+    int N, V, E, e1, e2;
+    char aux;
+    
+    cin >> N;
+
+    for(int i = 0; i < N; i++){
+        short *array_aux = (short*)calloc(N, sizeof(short));
+        Graph *g = new Graph();
+
+        int componentes = 1;
+
+        std::cout << "Case #" << i+1 << ":\n";
+        std::cin >> V >> E;
+
+        for(int j = 0; j < E; j++){
+            cin >> aux;
+            e1 = aux - 'a';
+            array_aux[e1] = 1;
+
+            std::cin >> aux;
+            e2 = aux - 'a';
+            array_aux[e2] = 1;
+
+            g->add_edge(e1, e2, 0);
+        }
+		for(int i = 0; i < V; i++)
+            if(array_aux[i] == 0)
+                g->add_edge(i, i, 0);
+        
+
+        dfs_tag_vertexes(g, g->adjacent_vertexes.begin()->first, -1);
+        std::cout << "\n";
+
+        for(auto k : g->adjacent_vertexes){
+            if(g->visited_vertexes[k.first] == 0){
+                componentes++;
+                dfs_tag_vertexes(g, k.first, -1);
+                cout << "\n";
+            }     
+        }
+        
+        cout << componentes << " connected components\n\n";
+
+        free(g);
+        free(array_aux);
+    }
+
+    return 0;
 }
 
+void dfs_tag_vertexes(Graph *g, int current_vertex, int parent_vertex){
+
+    std::vector<int> array_aux;
+
+    _dfs_tag_vertexes(g, current_vertex, parent_vertex, &array_aux);
+
+    std::sort(array_aux.begin(), array_aux.end());
+    
+    for(auto i : array_aux)
+        std::cout << (char)(i + 'a') << ",";
+
+}
+
+
+void _dfs_tag_vertexes(Graph *g, int current_vertex, int parent_vertex, std::vector<int> *arr){
+    if(g->visited_vertexes[current_vertex] == 2)
+        return;
+
+    g->visited_vertexes[current_vertex] = 1;
+    
+    arr->push_back(current_vertex);
+
+
+    for(auto i : g->adjacent_vertexes[current_vertex])
+        for(auto j : i)
+            if(j.first != parent_vertex && g->visited_vertexes[j.first] != 1)
+               _dfs_tag_vertexes(g, j.first, current_vertex, arr);
+
+    g->visited_vertexes[current_vertex] = 2;
+
+    return;
+}
